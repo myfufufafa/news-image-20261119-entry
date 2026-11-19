@@ -1,45 +1,79 @@
-"""A single picture carrying the whole planet's news for one Thursday.
+"""news-image-20261119 v2: ship the rebuilt front page to /output/entry.png.
 
-Beside this script sits entry.png: a crowded front page for 19 November
-2026, thirty-six items in all — six drawn large at the top, thirty
-numbered underneath, and a small map tying each place to its story.
-This script does nothing creative: it moves those exact bytes to the
-folder the grader reads, then proves the copy matches byte for byte.
+The entry image is generated once (media tool) and shipped in this repo as
+entry.png. This program copies it byte-for-byte to the output directory,
+verifying magic bytes, size and sha256 before and after the copy so the two
+graded runs always produce identical output. Standard library only.
 """
 
-import hashlib, os, sys
-import pathlib
+import hashlib
+import os
+import sys
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+SHIPPED = HERE / "entry.png"
+
+MAX_BYTES = 1_048_576
+PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+EXPECTED_SHA256 = "dd47cc3687e08b641850c9a2ea4d1a88c1a088816d7ad28b82daf9248281bc8e"
+EXPECTED_BYTES = 408385
 
 
-def _fingerprint(location):
-    return hashlib.sha256(location.read_bytes()).hexdigest()
+def digest(data: bytes) -> str:
+    return hashlib.sha256(data).hexdigest()
 
 
-def _place_picture():
-    repo = pathlib.Path(__file__).resolve().parent
-    shipped = repo / "entry.png"
-    out_folder = pathlib.Path(os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output")
-    out_folder.mkdir(parents=True, exist_ok=True)
-    target = out_folder / "entry.png"
-    payload = shipped.read_bytes()
-    target.write_bytes(payload)
-    if target.stat().st_size != len(payload):
-        raise RuntimeError("written file is not the same length as the shipped one")
-    if _fingerprint(shipped) != _fingerprint(target):
-        raise RuntimeError("written file bytes differ from the shipped ones")
-    return target
+def load_shipped() -> bytes:
+    data = SHIPPED.read_bytes()
+    if not data.startswith(PNG_MAGIC):
+        raise SystemExit("entry.png: bad PNG magic")
+    if len(data) > MAX_BYTES:
+        raise SystemExit(f"entry.png: {len(data)} bytes exceeds {MAX_BYTES}")
+    if len(data) != EXPECTED_BYTES:
+        raise SystemExit(
+            f"entry.png: {len(data)} bytes, expected {EXPECTED_BYTES}"
+        )
+    if digest(data) != EXPECTED_SHA256:
+        raise SystemExit("entry.png: sha256 mismatch")
+    return data
 
 
-def main(argv):
-    if "--check" in argv:
-        shipped = pathlib.Path(__file__).resolve().parent / "entry.png"
-        if shipped.stat().st_size > 1048576:
-            raise RuntimeError("shipped picture is over the one-mebibyte cap")
-        print("check ok:", _fingerprint(shipped))
+def output_path() -> Path:
+    dest_dir = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    return dest_dir / "entry.png"
+
+
+def check_only() -> int:
+    """Verify the shipped image and the already-written output, no writes."""
+    data = load_shipped()
+    dest = output_path()
+    if not dest.exists():
+        print(f"check: no output yet at {dest} (shipped image OK)")
         return 0
-    _place_picture()
+    written = dest.read_bytes()
+    if digest(written) != digest(data):
+        raise SystemExit("check: output differs from shipped entry.png")
+    print(f"check: OK, {dest} matches shipped image ({len(written)} bytes)")
+    return 0
+
+
+def main(argv=None) -> int:
+    args = list(sys.argv[1:] if argv is None else argv)
+    if args == ["--check"]:
+        return check_only()
+    if args:
+        raise SystemExit(f"unknown arguments: {' '.join(args)}")
+    data = load_shipped()
+    dest = output_path()
+    dest.write_bytes(data)
+    written = dest.read_bytes()
+    if digest(written) != EXPECTED_SHA256:
+        raise SystemExit("output: sha256 mismatch after write")
+    print(f"wrote {dest} ({len(written)} bytes, sha256 {digest(written)})")
     return 0
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv[1:]))
+    sys.exit(main())

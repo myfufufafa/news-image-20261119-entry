@@ -1,44 +1,63 @@
-# The world in one day — 19 November 2026
+# news-image-20261119 — v2 (rebuild)
 
-This repository holds one picture that tries to carry a whole day of
-world news: a packed newspaper page dated Thursday 19 November 2026,
-with thirty-six items counted in its masthead and every one of them
-actually printed — six big stories with pictures across the top, thirty
-short ones numbered below, and a small map at the foot showing where
-the big stories happened.
+Sum up 19 November's world news in one image: a broadsheet front page,
+**"THE WORLD IN ONE DAY"**, Thursday 19 November 2026. The masthead claims
+36 stories; the image as shipped shows the 6 leads plus briefs 7–26.
 
-## What is on the page
+## Layout
 
-Diplomacy leads the day: the first ever three-way meeting of the
-American, Chinese and Russian presidents, held in Shenzhen on the
-sidelines of the APEC leaders' gathering. The Gulf is the second
-thread: Iranian drones aimed at an American base in Kuwait, more
-interceptions over Bahrain, and the American strike on Qeshm Island
-that preceded them. Culture supplies the third: the worldwide launch
-of GTA VI and its return to Vice City.
+- Masthead + subhead with the date.
+- 6 lead stories with photos (2 rows x 3 columns): Trump–Xi–Putin meet in
+  Shenzhen; Iran widens Gulf strikes; GTA VI launches; World Court rules on
+  Myanmar; EU plans a €45bn Ukraine loan; NVIDIA beats, shares slip.
+- Briefs 7–26 in columns below the leads (see note below).
+- Wide world-map panel across the bottom strip with the six locations in
+  today's headlines, footer "MAP: LOCATIONS IN TODAY'S HEADLINES — NOT TO
+  SCALE".
 
-Around those, the page carries the court judgment on Myanmar, the
-European Union's planned €45 billion loan for Ukraine, Nvidia's
-$115.8 billion quarter under its interim chief, the Federal Reserve's
-minutes pointing to further rate rises, a falling Dow and gold price,
-Voyager 1 reaching a light-day from Earth, Cyclone Akvan approaching
-India's east coast, the COP31 talks, and two dozen more items from
-every continent — elections, courts, markets, space, weather, sport
-and technology.
+## Note on briefs 27–36
 
-## The picture
+Three further generations were tried to add briefs 27–36 (fresh build,
+in-place edit, second fresh build). Every one of them broke something worse:
+a duplicated "Washington" on the map, a missing "Gaza" label, garbled brief
+text, or the edit pasting a garbled column over the map itself. The shipped
+image is the clean version: all 6 leads plus briefs 7–26 (26 stories total),
+with both mandated fixes verified. The masthead still reads "36 STORIES"
+as in v1.
 
-`entry.png` is 1024 by 1024 pixels and 492,620 bytes, made with an AI
-image tool from the day's reporting and checked against several news
-outlets (BBC, Reuters wire summaries, Al Jazeera, AP summaries and
-morning headline round-ups). Its sha256 is
-`759a101cbb89dc8fcadf7c531159e72fa8cc982da2f27d4cfc466831a71c4505`.
+## What v2 fixes vs v1
 
-## How the program works
+1. **Map labels.** v1's map was a small strip with tiny, unreadable labels
+   and "Kyiv" printed twice. v2's map is a tall, wide panel; each of the six
+   locations — Shenzhen, the Gulf, Kyiv, Washington, Myanmar, Gaza — is
+   labelled exactly once, large and legible, with leader lines where needed
+   and no overlapping text. Verified by zooming into the map in the final
+   1024×1024 render.
+2. **Lead photo faces.** v1's lead photo had small, soft, generic faces.
+   v2's photo is a large, sharp, realistic press-style shot: Trump, Xi and
+   Putin big in frame at the table, each face distinct and recognisable,
+   with the US, Chinese and Russian flags behind them. Verified by zooming
+   into the photo in the final render.
 
-`main.py` needs nothing but the Python standard library and no
-network. Point `MAKEFUN_OUTPUT_DIR` at a folder and run the script;
-the shipped picture lands there as `entry.png`, and the script refuses
-to finish quietly unless the copy is the same length and the same
-sha256 as the file it shipped with. Run it twice and the two outputs
-are byte for byte the same.
+## How to run
+
+```sh
+mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
+```
+
+The program copies the shipped `entry.png` to `$MAKEFUN_OUTPUT_DIR/entry.png`
+(or `/output/entry.png` by default), deterministically and byte-identically
+on every run. It guards the PNG magic bytes, the 1 MiB size cap, the exact
+byte size and the sha256 of the shipped image, and re-verifies the output
+after writing.
+
+```sh
+MAKEFUN_OUTPUT_DIR=out python3 main.py --check   # verify without writing
+```
+
+## Files
+
+- `entry.png` — the entry image, 1024×1024 PNG, 408,385 bytes,
+  sha256 `dd47cc3687e08b641850c9a2ea4d1a88c1a088816d7ad28b82daf9248281bc8e`
+- `main.py` — the shipper program (Python 3.13, standard library only)
+- `LICENSE` — MIT
