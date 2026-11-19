@@ -1,62 +1,44 @@
-# news-image-20261119-entry
+# The world in one day — 19 November 2026
 
-[![make.fun · news-image-20261119](https://make.fun/badge/news-image-20261119.svg)](https://make.fun/bounty/news-image-20261119?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261119)
-[![rank](https://make.fun/badge/news-image-20261119/myfufufafa/news-image-20261119-entry/rank.svg)](https://make.fun/bounty/news-image-20261119/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261119)
-[![reward](https://make.fun/badge/news-image-20261119/myfufufafa/news-image-20261119-entry/reward.svg)](https://make.fun/bounty/news-image-20261119?utm_source=github&utm_medium=readme&utm_campaign=news-image-20261119)
+This repository holds one picture that tries to carry a whole day of
+world news: a packed newspaper page dated Thursday 19 November 2026,
+with thirty-six items counted in its masthead and every one of them
+actually printed — six big stories with pictures across the top, thirty
+short ones numbered below, and a small map at the foot showing where
+the big stories happened.
 
-One image summing up the world news of Thursday 19 November 2026: a dense
-front page — "THE WORLD IN ONE DAY" — with 36 stories (6 illustrated leads
-plus 30 numbered briefs, 7–36) from 6 continents and a small world-map panel
-marking where the lead stories happened. The masthead count (36) matches the
-stories actually printed — no missing numbers.
+## What is on the page
 
-The image (`entry.png`, 1024×1024, 492,620 bytes) was generated with an AI
-image tool from news reported on the day, and checked against several outlets
-(BBC, Reuters via wire summaries, AP summaries, Al Jazeera, Jagran Josh
-morning headlines, market wraps). `main.py` (Python 3.13, standard library
-only) copies it to the output directory as `entry.png`.
+Diplomacy leads the day: the first ever three-way meeting of the
+American, Chinese and Russian presidents, held in Shenzhen on the
+sidelines of the APEC leaders' gathering. The Gulf is the second
+thread: Iranian drones aimed at an American base in Kuwait, more
+interceptions over Bahrain, and the American strike on Qeshm Island
+that preceded them. Culture supplies the third: the worldwide launch
+of GTA VI and its return to Vice City.
 
-## Run it
+Around those, the page carries the court judgment on Myanmar, the
+European Union's planned €45 billion loan for Ukraine, Nvidia's
+$115.8 billion quarter under its interim chief, the Federal Reserve's
+minutes pointing to further rate rises, a falling Dow and gold price,
+Voyager 1 reaching a light-day from Earth, Cyclone Akvan approaching
+India's east coast, the COP31 talks, and two dozen more items from
+every continent — elections, courts, markets, space, weather, sport
+and technology.
 
-```sh
-mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
-```
+## The picture
 
-## Stories in the image
+`entry.png` is 1024 by 1024 pixels and 492,620 bytes, made with an AI
+image tool from the day's reporting and checked against several news
+outlets (BBC, Reuters wire summaries, Al Jazeera, AP summaries and
+morning headline round-ups). Its sha256 is
+`759a101cbb89dc8fcadf7c531159e72fa8cc982da2f27d4cfc466831a71c4505`.
 
-Leads (illustrated):
+## How the program works
 
-1. **Trump, Xi and Putin meet in Shenzhen** — first trilateral talks at
-   APEC, Ukraine and Iran on the table (BBC, Reuters, CNA).
-2. **Iran widens Gulf strikes** — drones hit a US base in Kuwait (Ali Al
-   Salem); Bahrain intercepts attacks; US hit Qeshm Island (Reuters).
-3. **GTA VI launches worldwide** — Vice City returns, 99 on Metacritic,
-   record global rollout (Reuters, Guardian).
-4. **World Court rules on Myanmar** — ICJ judgment in the Rohingya
-   genocide case, The Gambia v. Myanmar (The Brief).
-5. **EU plans €45bn Ukraine loan** — to be repaid from Russian
-   reparations (Financial Times via wires).
-6. **Nvidia beats, shares slip** — revenue $115.8bn; interim chief Kress;
-   H-series chips halted to China (earnings reports).
-
-In brief (numbered 7–36 in the image): Fed minutes point to more rate
-hikes; Dow falls 561 as UnitedHealth sinks 10%; gold falls 3% to its
-lowest in over a year; Voyager 1 reaches one light-day from Earth; Canada
-recalibrates China ties, Carney seeks the right US deal; US senators warn
-AI cyber threats outpace defences; Israel pushes into central Gaza;
-Hegseth makes his first Venezuela visit since the Maduro seizure; Peltola
-wins the Alaska Senate race; Liu Yunping elected House Democratic Caucus
-chair; Cyclone Akvan nears India's east coast; COP31 climate talks enter
-their decisive phase; Iraq jails six French ISIL recruits for life; Saudi
-Arabia says danger passed in three southern cities; Somalia accuses the
-UAE of building bases on its soil; Deutsche Bank handled $582m in Epstein
-transactions; NSA internal network outage disrupts spies; LPG tanker sunk
-off Bulgaria was hit by projectiles; India and Japan review defence ties
-in Tokyo; US proposes tougher green-card rules; Duckett hits 133 as
-England press Australia; Trump says the US–Philippines trade deal is
-finalised; Australia sanctions Israeli settlers over the West Bank;
-California atmospheric river brings flood alerts; Microsoft in talks to
-sell AI services to ByteDance; Take-Two jumps 8% on the GTA VI launch;
-India renewable capacity reaches 299.25 GW; Goldman Sachs lifts India to
-overweight; Anthropic market debut looms as an AI test; oil tankers hit
-in Hormuz, an ADNOC vessel struck.
+`main.py` needs nothing but the Python standard library and no
+network. Point `MAKEFUN_OUTPUT_DIR` at a folder and run the script;
+the shipped picture lands there as `entry.png`, and the script refuses
+to finish quietly unless the copy is the same length and the same
+sha256 as the file it shipped with. Run it twice and the two outputs
+are byte for byte the same.

@@ -1,45 +1,45 @@
-"""news-image-20261119 entry (Python 3.13, standard library only).
+"""A single picture carrying the whole planet's news for one Thursday.
 
-The entry is the image this repository holds: entry.png, a dense front
-page summing up the world news of Thursday 19 November 2026 — 36 stories
-in the image (6 illustrated leads plus 30 numbered briefs, 7-36) across
-6 continents, with a small world-map panel. The program copies that image
-to the output directory as entry.png, byte for byte, so both runs of the
-program write identical output.
-
-Verified entry.png sha256:
-    759a101cbb89dc8fcadf7c531159e72fa8cc982da2f27d4cfc466831a71c4505
-Rendered stories: 36 (6 illustrated leads + 30 numbered briefs).
-Image: 1024x1024, 492620 bytes.
-
-Run locally:
-    mkdir -p out && MAKEFUN_OUTPUT_DIR=out python3 main.py
+Beside this script sits entry.png: a crowded front page for 19 November
+2026, thirty-six items in all — six drawn large at the top, thirty
+numbered underneath, and a small map tying each place to its story.
+This script does nothing creative: it moves those exact bytes to the
+folder the grader reads, then proves the copy matches byte for byte.
 """
 
-import os
-import shutil
-from pathlib import Path
-
-HERE = Path(__file__).resolve().parent
-OUTPUT_DIR = Path(os.environ.get("MAKEFUN_OUTPUT_DIR", "/output"))
-
-OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-shutil.copyfile(HERE / "entry.png", OUTPUT_DIR / "entry.png")
-
-# The copy must be exact: the judge sees exactly these bytes.
-# No timestamps, no randomness, no network: the same input file always
-# produces the same output bytes, so both graded runs agree.
-assert (OUTPUT_DIR / "entry.png").stat().st_size == (HERE / "entry.png").stat().st_size
-
-import hashlib
+import hashlib, os, sys
+import pathlib
 
 
-def _sha256(path):
-    digest = hashlib.sha256()
-    with open(path, "rb") as handle:
-        for chunk in iter(lambda: handle.read(65536), b""):
-            digest.update(chunk)
-    return digest.hexdigest()
+def _fingerprint(location):
+    return hashlib.sha256(location.read_bytes()).hexdigest()
 
 
-assert _sha256(HERE / "entry.png") == _sha256(OUTPUT_DIR / "entry.png")
+def _place_picture():
+    repo = pathlib.Path(__file__).resolve().parent
+    shipped = repo / "entry.png"
+    out_folder = pathlib.Path(os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output")
+    out_folder.mkdir(parents=True, exist_ok=True)
+    target = out_folder / "entry.png"
+    payload = shipped.read_bytes()
+    target.write_bytes(payload)
+    if target.stat().st_size != len(payload):
+        raise RuntimeError("written file is not the same length as the shipped one")
+    if _fingerprint(shipped) != _fingerprint(target):
+        raise RuntimeError("written file bytes differ from the shipped ones")
+    return target
+
+
+def main(argv):
+    if "--check" in argv:
+        shipped = pathlib.Path(__file__).resolve().parent / "entry.png"
+        if shipped.stat().st_size > 1048576:
+            raise RuntimeError("shipped picture is over the one-mebibyte cap")
+        print("check ok:", _fingerprint(shipped))
+        return 0
+    _place_picture()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))
